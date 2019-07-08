@@ -21,11 +21,18 @@ type Employer struct{}
 
 // CalculatePaycheck calculates a paycheck for a given employee
 func (em *Employer) CalculatePaycheck(ctx context.Context, employee *calculator.Employee) (paycheck *calculator.Paycheck, err error) {
-	paycheck.EmployeeFullName = fmt.Sprintf("%v %v", employee.FirstName, employee.LastName)
-	paycheck.TotalBenefits = CalculateTotalBenefits(*employee)
-	paycheck.TotalDiscounts = CalculateDiscounts(employee.RawIncome)
-	paycheck.TotalIncome = employee.RawIncome + (paycheck.TotalBenefits - paycheck.TotalDiscounts)
+	pc := &calculator.Paycheck{
+		EmployeeFullName: fmt.Sprintf("%v %v", employee.FirstName, employee.LastName),
+		TotalBenefits:    CalculateTotalBenefits(*employee),
+		TotalDiscounts:   CalculateDiscounts(employee.RawIncome),
+	}
 
+	pc.TotalIncome = employee.RawIncome + (pc.TotalBenefits - pc.TotalDiscounts)
+	// paycheck.EmployeeFullName = fmt.Sprintf("%v %v", employee.FirstName, employee.LastName)
+	// paycheck.TotalBenefits = CalculateTotalBenefits(*employee)
+	// paycheck.TotalDiscounts = CalculateDiscounts(employee.RawIncome)
+	// paycheck.TotalIncome = employee.RawIncome + (paycheck.TotalBenefits - paycheck.TotalDiscounts)
+	paycheck = pc
 	logrus.Infof("Paycheck for %v\n TotalBenefits: %.2f\n TotalDiscounts: %.2f\n TotalIncome: %.2f\n", paycheck.EmployeeFullName, paycheck.TotalBenefits, paycheck.TotalDiscounts, paycheck.TotalIncome)
 	return
 }
